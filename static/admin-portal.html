@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Election Admin Panel</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fafc;
+      color: #333;
+      margin: 0;
+    }
+    header {
+      background: linear-gradient(45deg, #007bff, #00c6ff);
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+    }
+    header button {
+      background: #ff4757;
+      border: none;
+      padding: 10px 20px;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    header button:hover {
+      background: #e84118;
+    }
+    .container {
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .section {
+      flex: 1 1 44%;
+      min-width: 370px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+      padding: 22px;
+      margin-bottom: 10px;
+      transition: 0.3s;
+    }
+    .section:hover {
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.13);
+    }
+    h2 {
+      margin-top: 0;
+      color: #007bff;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 8px;
+    }
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button.action {
+      background: #007bff;
+      border: none;
+      padding: 10px;
+      color: #fff;
+      border-radius: 6px;
+      width: 100%;
+      margin-top: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 15px;
+    }
+    button.action:hover {
+      background: #0056b3;
+    }
+    button.danger {
+      background: #dc3545;
+    }
+    button.danger:hover {
+      background: #b52a37;
+    }
+    button.nav-btn {
+      background: #28a745;
+      border: none;
+      padding: 15px;
+      color: #fff;
+      border-radius: 8px;
+      width: 100%;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    button.nav-btn:hover {
+      background: #1e7e34;
+      transform: translateY(-2px);
+    }
+    button.back-btn {
+      background: #6c757d;
+      border: none;
+      padding: 10px 20px;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+    button.back-btn:hover {
+      background: #545b62;
+    }
+    /* Biometric Styles */
+    .biometric-section {
+      background: #f8f9fa;
+      border: 2px dashed #007bff;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 15px 0;
+      text-align: center;
+    }
+    .biometric-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      background: #e9ecef;
+      border-radius: 6px;
+      padding: 4px;
+    }
+    .biometric-tab {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 14px;
+    }
+    .biometric-tab.active {
+      background: #007bff;
+      color: white;
+    }
+    .biometric-content {
+      display: none;
+    }
+    .biometric-content.active {
+      display: block;
+    }
+    .scan-area {
+      width: 100%;
+      height: 200px;
+      background: #000;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 15px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .scan-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #00ff00;
+      font-size: 16px;
+      text-align: center;
+    }
+    .scan-animation {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00ff00, transparent);
+      animation: scan 2s linear infinite;
+    }
+    @keyframes scan {
+      0% { top: 0; }
+      100% { top: 100%; }
+    }
+    .fingerprint-area {
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle, #333 1px, transparent 1px);
+      background-size: 10px 10px;
+      border-radius: 50%;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #007bff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .fingerprint-area:hover {
+      border-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .fingerprint-icon {
+      font-size: 48px;
+      color: #007bff;
+    }
+    .scan-status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .scan-status.scanning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    .scan-status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .scan-status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .biometric-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 15px 0;
+      font-size: 12px;
+    }
+    .biometric-info div {
+      padding: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+    }
+    table {
+      margin-top: 12px;
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 14px;
+    }
+    th {
+      background: #007bff;
+      color: #fff;
+      padding: 10px;
+    }
+    td {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
+    tr:hover td {
+      background: #f1f9ff;
+    }
+    .stats {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      flex: 1;
+      background: #f1f9ff;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 5px solid #007bff;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .stat span {
+      display: block;
+      font-size: 14px;
+      font-weight: normal;
+      color: #777;
+    }
+    .msg {
+      padding: 10px 0;
+      color: #f44336;
+      text-align: center;
+    }
+    #login-page {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+    }
+    .login-box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+      width: 320px;
+      text-align: center;
+    }
+    .login-box h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .login-box input[type="password"] {
+      font-size: 16px;
+    }
+    .login-box button {
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .login-box button:hover {
+      background: #0056b3;
+    }
+    #error {
+      color: red;
+      display: none;
+      margin-top: 10px;
+    }
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .nav-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+      padding: 20px;
+      text-align: center;
+      transition: 0.3s;
+    }
+    .nav-card:hover {
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.13);
+    }
+    .nav-card h3 {
+      color: #007bff;
+      margin: 0 0 15px 0;
+      font-size: 18px;
+    }
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+    @media (max-width: 1100px) {
+      .section {
+        min-width: 95vw;
+      }
+      .nav-grid {
+        grid-template-columns: 1fr;
+      }
+      .biometric-tabs {
+        flex-direction: column;
+      }
+      .biometric-info {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN PAGE -->
+  <div id="login-page" style="display: flex;">
+    <div class="login-box">
+      <h2>🔐 Admin Login</h2>
+      <form onsubmit="return validateLogin(event)">
+        <input type="password" id="adminPassword" placeholder="Enter Password" required />
+        <button type="submit">Login</button>
+      </form>
+      <p id="error">❌ Invalid Password</p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD PAGE -->
+  <div id="dashboard-page" style="display: none;">
+    <header>
+      <h1>📊 Admin Dashboard</h1>
+      <button onclick="logout()">🚪 Logout</button>
+    </header>
+    <div id="alert" class="msg"></div>
+
+    <!-- Main Navigation Menu -->
+    <div id="main-menu" class="page active">
+      <!-- Overview Stats -->
+      <div class="container">
+        <div class="section" style="flex:1 1 100%;">
+          <h2>📊 System Overview</h2>
+          <div class="stats">
+            <div class="stat"><span>Voters</span><div id="count-voters">0</div></div>
+            <div class="stat"><span>Officers</span><div id="count-officers">0</div></div>
+            <div class="stat"><span>Parties</span><div id="count-parties">0</div></div>
+            <div class="stat"><span>Total Votes</span><div id="count-votes">0</div></div>
+          </div>
+          <br />
+          <button class="danger action" onclick="resetSystem()">⚠️ Reset System</button>
+        </div>
+      </div>
+
+      <!-- Navigation Cards -->
+      <div class="nav-grid">
+        <div class="nav-card">
+          <h3>👥 Voter Management</h3>
+          <p>Register new voters with biometric verification</p>
+          <button class="nav-btn" onclick="showPage('voter-page')">Go to Voter Registration</button>
+        </div>
+        
+        <div class="nav-card">
+          <h3>👮 Officer Management</h3>
+          <p>Register polling officers and manage their credentials</p>
+          <button class="nav-btn" onclick="showPage('officer-page')">Go to Officer Registration</button>
+        </div>
+        
+        <div class="nav-card">
+          <h3>🎉 Party Management</h3>
+          <p>Register political parties and assign symbols</p>
+          <button class="nav-btn" onclick="showPage('party-page')">Go to Party Registration</button>
+        </div>
+        
+        <div class="nav-card">
+          <h3>📈 Election Results</h3>
+          <p>View real-time election results and statistics</p>
+          <button class="nav-btn" onclick="showPage('results-page')">View Election Results</button>
+        </div>
+        
+        <div class="nav-card">
+          <h3>🗑 User Management</h3>
+          <p>Remove voters and officers from the system</p>
+          <button class="nav-btn" onclick="showPage('management-page')">Go to User Management</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Voter Registration Page with Biometric -->
+    <div id="voter-page" class="page">
+      <div class="container">
+        <button class="back-btn" onclick="showPage('main-menu')">← Back to Main Menu</button>
+        <div class="section" style="flex:1 1 100%;">
+          <h2>👥 Register Voter with Biometric Verification</h2>
+          
+          <!-- Basic Information -->
+          <h3>📋 Basic Information</h3>
+          <input type="text" id="voterId" placeholder="Voter ID" />
+          <input type="text" id="voterName" placeholder="Full Name" />
+          <input type="text" id="voterPhone" placeholder="Phone Number" />
+          
+          <!-- Biometric Verification Section -->
+          <div class="biometric-section">
+            <h3>🔐 Biometric Verification</h3>
+            <p>Complete biometric verification to secure voter registration</p>
+            
+            <div class="biometric-tabs">
+              <button class="biometric-tab active" onclick="switchBiometricTab('fingerprint')">
+                👆 Fingerprint
+              </button>
+              <button class="biometric-tab" onclick="switchBiometricTab('iris')">
+                👁️ Iris Scan
+              </button>
+            </div>
+
+            <!-- Fingerprint Section -->
+            <div id="fingerprint-content" class="biometric-content active">
+              <h4>👆 Fingerprint Authentication</h4>
+              <div class="fingerprint-area" onclick="startFingerprintScan()">
+                <div class="fingerprint-icon">👆</div>
+              </div>
+              <p>Place your finger on the scanner above</p>
+              <div id="fingerprint-status" class="scan-status" style="display: none;"></div>
+              <button class="action" onclick="startFingerprintScan()" id="fingerprint-btn">
+                🔍 Start Fingerprint Scan
+              </button>
+            </div>
+
+            <!-- Iris Scan Section -->
+            <div id="iris-content" class="biometric-content">
+              <h4>👁️ Iris Recognition</h4>
+              <div class="scan-area">
+                <div class="scan-overlay">
+                  <div>👁️ Position your eye in the scanner</div>
+                  <div style="font-size: 12px; margin-top: 5px;">Look straight ahead</div>
+                </div>
+                <div id="iris-scan-line" class="scan-animation" style="display: none;"></div>
+              </div>
+              <div id="iris-status" class="scan-status" style="display: none;"></div>
+              <button class="action" onclick="startIrisScan()" id="iris-btn">
+                🔍 Start Iris Scan
+              </button>
+            </div>
+
+            <!-- Biometric Information Display -->
+            <div id="biometric-info" class="biometric-info" style="display: none;">
+              <div><strong>Fingerprint Status:</strong> <span id="fp-status">Not Captured</span></div>
+              <div><strong>Iris Status:</strong> <span id="iris-status-info">Not Captured</span></div>
+              <div><strong>Quality Score:</strong> <span id="quality-score">0%</span></div>
+              <div><strong>Verification:</strong> <span id="verification-status">Pending</span></div>
+            </div>
+          </div>
+
+          <!-- Registration Button -->
+          <button class="action" onclick="registerVoterWithBiometric()" id="register-voter-btn" disabled>
+            ✅ Register Voter (Complete Biometric First)
+          </button>
+          
+          <!-- Voters Table -->
+          <table id="voterTable">
+            <tr>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Phone</th>
+              <th>Biometric</th>
+              <th>Voted</th>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Officer Registration Page -->
+    <div id="officer-page" class="page">
+      <div class="container">
+        <button class="back-btn" onclick="showPage('main-menu')">← Back to Main Menu</button>
+        <div class="section" style="flex:1 1 100%;">
+          <h2>👮 Register Officer</h2>
+          <input type="text" id="officerName" placeholder="Name" />
+          <input type="text" id="officerNumber" placeholder="Number" />
+          <button class="action" onclick="registerOfficer()">✅ Register Officer</button>
+          <table id="officerTable">
+            <tr><th>Name</th><th>Number</th><th>Key-ID</th></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Party Registration Page -->
+    <div id="party-page" class="page">
+      <div class="container">
+        <button class="back-btn" onclick="showPage('main-menu')">← Back to Main Menu</button>
+        <div class="section" style="flex:1 1 100%;">
+          <h2>🎉 Register Party</h2>
+          <input type="text" id="partyName" placeholder="Party Name" />
+          <select id="partySymbol">
+            <option value="">-- Select Symbol --</option>
+            <option>🌟</option>
+            <option>🔥</option>
+            <option>🌈</option>
+            <option>🦁</option>
+            <option>🐘</option>
+            <option>🕊️</option>
+            <option>⚡</option>
+            <option>🌹</option>
+            <option>🌳</option>
+            <option>🌊</option>
+            <option>🍎</option>
+            <option>🏹</option>
+            <option>🎯</option>
+            <option>🚀</option>
+            <option>🪙</option>
+            <option>🐅</option>
+            <option>🛡️</option>
+            <option>🎸</option>
+            <option>📢</option>
+            <option>🧭</option>
+          </select>
+          <button class="action" onclick="registerParty()">✅ Register Party</button>
+          <table id="partyTable">
+            <tr><th>Name</th><th>Symbol</th><th>Votes</th></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Election Results Page -->
+    <div id="results-page" class="page">
+      <div class="container">
+        <button class="back-btn" onclick="showPage('main-menu')">← Back to Main Menu</button>
+        <div class="section" style="flex:1 1 100%;">
+          <h2>📈 Election Results</h2>
+          <table id="resultTable">
+            <tr><th>Rank</th><th>Name</th><th>Symbol</th><th>Votes</th><th>%</th></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Management Page -->
+    <div id="management-page" class="page">
+      <div class="container">
+        <button class="back-btn" onclick="showPage('main-menu')">← Back to Main Menu</button>
+        <div class="section" style="flex:1 1 100%;">
+          <h2>🗑 User Management</h2>
+          <div style="margin-bottom: 20px;">
+            <h3>Remove Voter</h3>
+            <input type="text" id="removeVoterId" placeholder="Voter ID" />
+            <button class="danger action" onclick="removeVoter()">🗑️ Remove Voter</button>
+          </div>
+          <div>
+            <h3>Remove Officer</h3>
+            <input type="text" id="removeOfficerId" placeholder="Officer Key-ID" />
+            <button class="danger action" onclick="removeOfficer()">🗑️ Remove Officer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BASE = "http://localhost:5000"; // Set your backend URL if different
+    const adminPassword = "SKUCET@123";
+
+    // Biometric state
+    let biometricData = {
+      fingerprint: null,
+      iris: null,
+      verified: false
+    };
+
+    function msg(text, color = "red") {
+      const alertDiv = document.getElementById("alert");
+      alertDiv.innerText = text || "";
+      alertDiv.style.color = color;
+      alertDiv.style.display = text ? "" : "none";
+      if (text) setTimeout(() => { alertDiv.innerText = ""; }, 3500);
+    }
+
+    // ------- BIOMETRIC FUNCTIONS -------
+    function switchBiometricTab(type) {
+      // Update tabs
+      document.querySelectorAll('.biometric-tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelector(`[onclick="switchBiometricTab('${type}')"]`).classList.add('active');
+      
+      // Update content
+      document.querySelectorAll('.biometric-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(`${type}-content`).classList.add('active');
+    }
+
+    function startFingerprintScan() {
+      const statusDiv = document.getElementById('fingerprint-status');
+      const btn = document.getElementById('fingerprint-btn');
+      
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'scan-status scanning';
+      statusDiv.textContent = '🔍 Scanning fingerprint... Please hold still';
+      btn.disabled = true;
+      btn.textContent = '⏳ Scanning...';
+      
+      // Simulate fingerprint scanning
+      setTimeout(() => {
+        const success = Math.random() > 0.2; // 80% success rate
+        if (success) {
+          statusDiv.className = 'scan-status success';
+          statusDiv.textContent = '✅ Fingerprint captured successfully!';
+          biometricData.fingerprint = {
+            template: 'FP_' + generateRandomId(),
+            quality: Math.floor(Math.random() * 20) + 80,
+            timestamp: new Date().toISOString()
+          };
+          document.getElementById('fp-status').textContent = 'Captured';
+          updateBiometricInfo();
+        } else {
+          statusDiv.className = 'scan-status error';
+          statusDiv.textContent = '❌ Scan failed. Please try again.';
+        }
+        btn.disabled = false;
+        btn.textContent = '🔍 Start Fingerprint Scan';
+      }, 3000);
+    }
+
+    function startIrisScan() {
+      const statusDiv = document.getElementById('iris-status');
+      const btn = document.getElementById('iris-btn');
+      const scanLine = document.getElementById('iris-scan-line');
+      
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'scan-status scanning';
+      statusDiv.textContent = '👁️ Scanning iris pattern... Look straight ahead';
+      btn.disabled = true;
+      btn.textContent = '⏳ Scanning...';
+      scanLine.style.display = 'block';
+      
+      // Simulate iris scanning
+      setTimeout(() => {
+        const success = Math.random() > 0.15; // 85% success rate
+        scanLine.style.display = 'none';
+        if (success) {
+          statusDiv.className = 'scan-status success';
+          statusDiv.textContent = '✅ Iris pattern captured successfully!';
+          biometricData.iris = {
+            template: 'IRIS_' + generateRandomId(),
+            quality: Math.floor(Math.random() * 15) + 85,
+            timestamp: new Date().toISOString()
+          };
+          document.getElementById('iris-status-info').textContent = 'Captured';
+          updateBiometricInfo();
+        } else {
+          statusDiv.className = 'scan-status error';
+          statusDiv.textContent = '❌ Scan failed. Please position eye properly and try again.';
+        }
+        btn.disabled = false;
+        btn.textContent = '🔍 Start Iris Scan';
+      }, 4000);
+    }
+
+    function updateBiometricInfo() {
+      const infoDiv = document.getElementById('biometric-info');
+      const registerBtn = document.getElementById('register-voter-btn');
+      
+      infoDiv.style.display = 'grid';
+      
+      // Calculate overall quality score
+      let totalQuality = 0;
+      let scansCompleted = 0;
+      
+      if (biometricData.fingerprint) {
+        totalQuality += biometricData.fingerprint.quality;
+        scansCompleted++;
+      }
+      if (biometricData.iris) {
+        totalQuality += biometricData.iris.quality;
+        scansCompleted++;
+      }
+      
+      const averageQuality = scansCompleted > 0 ? Math.floor(totalQuality / scansCompleted) : 0;
+      document.getElementById('quality-score').textContent = averageQuality + '%';
+      
+      // Check if biometric verification is complete
+      if (biometricData.fingerprint && biometricData.iris) {
+        biometricData.verified = true;
+        document.getElementById('verification-status').textContent = 'Complete ✅';
+        registerBtn.disabled = false;
+        registerBtn.textContent = '✅ Register Voter with Biometric Data';
+      } else {
+        document.getElementById('verification-status').textContent = 'Incomplete (Need both scans)';
+      }
+    }
+
+    function generateRandomId() {
+      return Math.random().toString(36).substr(2, 9).toUpperCase();
+    }
+
+    // ------- PAGE NAVIGATION -------
+    function showPage(pageId) {
+      // Hide all pages
+      const pages = document.querySelectorAll('.page');
+      pages.forEach(page => page.classList.remove('active'));
+      
+      // Show selected page
+      document.getElementById(pageId).classList.add('active');
+      
+      // Reset biometric data when showing voter page
+      if (pageId === 'voter-page') {
+        resetBiometricData();
+      }
+      
+      // Load data when showing specific pages
+      if (pageId === 'voter-page' || pageId === 'officer-page' || 
+          pageId === 'party-page' || pageId === 'results-page' || 
+          pageId === 'main-menu') {
+        loadAll();
+      }
+    }
+
+    function resetBiometricData() {
+      biometricData = {
+        fingerprint: null,
+        iris: null,
+        verified: false
+      };
+      
+      // Reset UI elements
+      document.getElementById('biometric-info').style.display = 'none';
+      document.getElementById('fp-status').textContent = 'Not Captured';
+      document.getElementById('iris-status-info').textContent = 'Not Captured';
+      document.getElementById('quality-score').textContent = '0%';
+      document.getElementById('verification-status').textContent = 'Pending';
+      
+      // Reset status divs
+      document.getElementById('fingerprint-status').style.display = 'none';
+      document.getElementById('iris-status').style.display = 'none';
+      
+      // Reset buttons
+      document.getElementById('register-voter-btn').disabled = true;
+      document.getElementById('register-voter-btn').textContent = '✅ Register Voter (Complete Biometric First)';
+    }
+
+    // ------- LOGIN -------
+    function validateLogin(event) {
+      event.preventDefault();
+      const pass = document.getElementById("adminPassword").value;
+      if (pass === adminPassword) {
+        localStorage.setItem("isAdminLogged", "true");
+        showDashboard();
+      } else {
+        document.getElementById("error").style.display = "block";
+      }
+    }
+
+    function showDashboard() {
+      document.getElementById("login-page").style.display = "none";
+      document.getElementById("dashboard-page").style.display = "block";
+      loadAll();
+    }
+
+    // ------- LOGOUT -------
+    function logout() {
+      localStorage.removeItem("isAdminLogged");
+      location.reload();
+    }
+
+    // ------- LOAD DATA & UPDATE UI -------
+    async function loadAll() {
+      try {
+        const res = await fetch(BASE + "/dashboard");
+        const data = await res.json();
+        // stats
+        document.getElementById("count-voters").textContent = data.system_stats.total_voters;
+        document.getElementById("count-officers").textContent = data.polling_officers.length;
+        document.getElementById("count-parties").textContent = data.parties_votes.length;
+        document.getElementById("count-votes").textContent = data.system_stats.total_votes;
+
+        // voters table (updated to show biometric status)
+        let vrows = `<tr><th>Name</th><th>ID</th><th>Phone</th><th>Biometric</th><th>Voted</th></tr>`;
+        data.voters.forEach(v =>
+          vrows += `<tr><td>${v.name}</td><td>${v.id_number}</td><td>${v.phone}</td><td>${v.biometric_verified ? '🔐 Verified' : '⚠️ Not Verified'}</td><td>${v.has_voted ? "Yes" : "No"}</td></tr>`
+        );
+        document.getElementById("voterTable").innerHTML = vrows;
+
+        // officers table
+        let orows = `<tr><th>Name</th><th>Number</th><th>Key-ID</th></tr>`;
+        data.polling_officers.forEach(o =>
+          orows += `<tr><td>${o.name}</td><td>${o.number}</td><td>${o.key_id || ""}</td></tr>`
+        );
+        document.getElementById("officerTable").innerHTML = orows;
+
+        // parties table
+        let prows = `<tr><th>Name</th><th>Symbol</th><th>Votes</th></tr>`;
+        data.parties_votes.forEach(p =>
+          prows += `<tr><td>${p.party_name}</td><td>${p.symbol}</td><td>${p.votes}</td></tr>`
+        );
+        document.getElementById("partyTable").innerHTML = prows;
+
+        await loadResults();
+      } catch (err) {
+        msg("Failed to load dashboard data.");
+      }
+    }
+
+    async function loadResults() {
+      try {
+        const res = await fetch(BASE + "/get_results");
+        const data = await res.json();
+        let rows = `<tr><th>Rank</th><th>Name</th><th>Symbol</th><th>Votes</th><th>%</th></tr>`;
+        data.results.forEach(r =>
+          rows += `<tr><td>${r.rank}</td><td>${r.party_name}</td><td>${r.symbol}</td><td>${r.votes}</td><td>${r.percentage}</td></tr>`
+        );
+        document.getElementById("resultTable").innerHTML = rows;
+      } catch { }
+    }
+
+    // ---------- REGISTER WITH BIOMETRIC ----------
+    async function registerVoterWithBiometric() {
+      const voter_id = document.getElementById("voterId").value.trim();
+      const name = document.getElementById("voterName").value.trim();
+      const phone = document.getElementById("voterPhone").value.trim();
+      
+      if (!voter_id || !name || !phone) return msg("Please fill all voter details");
+      if (!biometricData.verified) return msg("Please complete biometric verification first");
+      
+      let res = await fetch(BASE + "/admin_register_voter_biometric", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          voter_id, 
+          name, 
+          phone, 
+          biometric_data: biometricData 
+        }),
+      });
+      let d = await res.json();
+      if (d.ok) {
+        msg("Voter registered with biometric verification!", "green");
+        document.getElementById("voterId").value = "";
+        document.getElementById("voterName").value = "";
+        document.getElementById("voterPhone").value = "";
+        resetBiometricData();
+        loadAll();
+      } else {
+        msg(d.error || "Registration failed");
+      }
+    }
+
+    // Original register function for backward compatibility
+    async function registerVoter() {
+      return registerVoterWithBiometric();
+    }
+
+    async function registerOfficer() {
+      const name = document.getElementById("officerName").value.trim();
+      const number = document.getElementById("officerNumber").value.trim();
+      if (!name || !number) return msg("Please fill all officer details");
+      let res = await fetch(BASE + "/register_officer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, number }),
+      });
+      let d = await res.json();
+      if (d.ok) {
+        msg("Officer registered! Key-ID: " + d.key_id, "green");
+        document.getElementById("officerName").value = "";
+        document.getElementById("officerNumber").value = "";
+        loadAll();
+      } else {
+        msg(d.error || "Registration failed");
+      }
+    }
+
+    async function registerParty() {
+      const party_name = document.getElementById("partyName").value.trim();
+      const symbol = document.getElementById("partySymbol").value;
+      if (!party_name || !symbol) return msg("Please fill all party details and select a symbol");
+      let res = await fetch(BASE + "/register_party", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ party_name, symbol }),
+      });
+      let d = await res.json();
+      if (d.ok) {
+        msg("Party registered!", "green");
+        document.getElementById("partyName").value = "";
+        document.getElementById("partySymbol").value = "";
+        loadAll();
+      } else {
+        msg(d.error || "Registration failed");
+      }
+    }
+
+    // ----------- REMOVE ------------
+    async function removeVoter() {
+      const voter_id = document.getElementById("removeVoterId").value.trim();
+      if (!voter_id) return msg("Enter Voter ID to remove");
+      let res = await fetch(BASE + "/remove_voter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ voter_id }),
+      });
+      let d = await res.json();
+      if (d.ok) {
+        msg("Voter removed!", "green");
+        document.getElementById("removeVoterId").value = "";
+        loadAll();
+      } else {
+        msg(d.error || "Delete failed");
+      }
+    }
+
+    async function removeOfficer() {
+      const key_id = document.getElementById("removeOfficerId").value.trim();
+      if (!key_id) return msg("Enter Officer Key-ID to remove");
+      let res = await fetch(BASE + "/remove_officer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key_id }),
+      });
+      let d = await res.json();
+      if (d.ok) {
+        msg("Officer removed!", "green");
+        document.getElementById("removeOfficerId").value = "";
+        loadAll();
+      } else {
+        msg(d.error || "Delete failed");
+      }
+    }
+
+    // ----------- RESET -----------
+    async function resetSystem() {
+      if (!confirm("Are you sure you want to reset the system?")) return;
+      let pwd = prompt("Enter admin password to reset:");
+      if (!pwd) return;
+      let res = await fetch(BASE + "/reset_system", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pwd }),
+      });
+      let d = await res.json();
+      if (d.ok) {
+        msg("System reset!", "green");
+        loadAll();
+      } else {
+        msg(d.error || "Reset failed");
+      }
+    }
+
+    // ON PAGE LOAD
+    window.onload = () => {
+      if (localStorage.getItem("isAdminLogged") === "true") {
+        showDashboard();
+      }
+    };
+  </script>
+</body>
+</html>

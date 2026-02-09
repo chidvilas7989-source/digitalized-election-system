@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Polling Session</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background: radial-gradient(circle at 70% 10%, #e0c3fc 0%, #8ec5fc 80%);
+      min-height: 100vh;
+      font-family: 'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .main {
+      max-width: 460px;
+      background: #fff;
+      margin: 35px auto 0 auto;
+      border-radius: 1em;
+      box-shadow: 0 6px 32px 0 #54527128;
+      padding: 35px 34px 30px 34px;
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+      font-weight: 800;
+      color: #4e54c8;
+      margin-top: 0;
+      letter-spacing: 1px;
+    }
+    .section {
+      margin-bottom: 2em;
+      border-bottom: 1.5px dashed #ececec;
+      padding-bottom: 1.2em;
+    }
+    .section:last-child { border-bottom: none; }
+    label {
+      font-weight: 500;
+      margin-top: 8px;
+      color: #222;
+      display: block;
+      margin-bottom: 7px;
+    }
+    input, select {
+      background: #f5f8ff;
+      border: 1px solid #ccd7ff;
+      border-radius: 8px;
+      padding: 10px 10px;
+      margin-bottom: 8px;
+      margin-right: 7px;
+      width: 95%;
+      font-size: 1em;
+      transition: border 0.2s;
+      outline: none;
+    }
+    input:focus, select:focus { border: 1.5px solid #4e54c8; }
+    button {
+      background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 10px 21px;
+      font-size: 1.05em;
+      font-weight: 600;
+      margin: 10px 0 0 0;
+      box-shadow: 0 2px 8px #8ec5fc66;
+      cursor: pointer;
+      transition: background 0.24s, box-shadow 0.21s;
+    }
+    button:active {
+      background: linear-gradient(90deg, #29ffc6 0%, #20e3b2 100%);
+      box-shadow: none;
+    }
+    .status {
+      font-size: 0.98em;
+      margin-top: 6px;
+      padding: 4px 0 4px 0;
+      border-radius: 5px;
+      text-align: left;
+      min-height: 20px;
+    }
+    .status.ok { color: #2c9757; background: #e6ffe8; }
+    .status.err { color: #ff4a60; background: #fff2f0;}
+    .parties-list {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 4px;
+      gap: 8px;
+    }
+    .party-btn {
+      display: flex;
+      align-items: center;
+      border: 1px solid #e0e0e0;
+      border-radius: 7px;
+      padding: 6px 16px;
+      background: #fafbff;
+      color: #444;
+      font-size: 1em;
+      font-weight: 400;
+      cursor: pointer;
+      outline: none;
+      min-width: 120px;
+      min-height: 34px;
+      gap: 10px;
+      transition: background 0.17s, border 0.17s;
+    }
+    .party-btn.selected, .party-btn:hover {
+      background: linear-gradient(90deg, #f5f7fa 10%, #43cea2 150%);
+      border: 1.5px solid #4e54c8;
+      color: #1f1c41;
+      font-weight: 600;
+    }
+    .party-symbol {
+      font-size: 1.3em; margin-right: 7px;
+    }
+    .vote-res {
+      margin-top: 9px; 
+      padding: 6px 8px 6px 8px;
+      background: #f5f7fd;
+      border-radius: 8px;
+      box-shadow: 0 1px 5px #d1edfa33;
+      font-size: 1em;
+      font-family: 'Segoe UI',sans-serif;
+      min-height: 18px;
+    }
+    @media (max-width: 500px) {
+      .main { padding: 15px 3vw 14px 3vw; }
+      h1 { font-size: 1.1em; }
+      .parties-list { gap: 3px; }
+      .party-btn { padding: 5px 2vw; min-width: 76px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="main">
+    <h1>Polling Session</h1>
+
+    <!-- Officer Login -->
+    <div class="section" id="officer-login-section">
+      <label for="officer-num">Officer Number</label>
+      <input id="officer-num" autocomplete="username" placeholder="e.g. OFF123">
+      <label for="officer-key">Key-ID</label>
+      <input id="officer-key" type="password" autocomplete="current-password" placeholder="your secure Key-ID">
+      <button onclick="officerLogin()">Login</button>
+      <div id="officer-login-status" class="status"></div>
+    </div>
+
+    <!-- Officer Session Box (hidden by default) -->
+    <div class="section" id="officer-session-section" style="display:none">
+      <div style="margin-bottom:16px;">
+        <span style="font-weight: 600; color:#2c3c7c;">Welcome, VOTER You are now in a polling booth.you are under servilance</span>
+        <button style="float:right; background:#ff4a60cc;margin:0;" onclick="promptEndSession()">End Session</button>
+      </div>
+
+      <!-- Voter Verification & Biometric -->
+      <label>Voter ID</label>
+      <input id="voter-id" placeholder="Voter ID (as registered)">
+      <button onclick="verifyVoter()">1️⃣ Verify Voter</button>
+      <div id="verify-status" class="status"></div>
+
+      <button style="background:#43b0ff;" onclick="biometricVerify()">2️⃣ Biometric Verify</button>
+      <div id="biometric-status" class="status"></div>
+
+      <!-- Voting -->
+      <div style="border:1px solid #dde7ff; margin:15px 0 6px 0; border-radius:7px; background:#f9f9fd; padding:10px;">
+        <b>3️⃣ Cast Vote</b>
+        <div id="parties-buttons" class="parties-list"></div>
+        <button id="cast-btn" style="background:#20e3b2;display:block;" onclick="castVote()">Submit Vote</button>
+        <div id="vote-status" class="vote-res"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API = "http://127.0.0.1:5000";
+
+let officerSessionId = "";
+let verifiedVoterId = "";
+let voterBiometricOk = false;
+let selectedPartyName = "";
+
+// Officer Login
+async function officerLogin() {
+  resetAllUI();
+  const number = document.getElementById('officer-num').value.trim();
+  const key = document.getElementById('officer-key').value.trim();
+  setStatus('officer-login-status', '', '');  
+  if(!number || !key) { setStatus('officer-login-status', 'Officer Number and Key-ID required!', 'err'); return;}
+  setStatus('officer-login-status', 'Logging in...', '');
+
+  const r = await fetch(API + "/officer_login", {
+    method: "POST",
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify({ id: number, key_id: key })
+  });
+  const data = await r.json();
+  if(data.ok) {
+    officerSessionId = data.session_id;
+    setStatus('officer-login-status', 'Login successful!','ok');
+    document.getElementById('officer-login-section').style.display = "none";
+    document.getElementById('officer-session-section').style.display = "";
+    loadParties();
+  } else {
+    setStatus('officer-login-status', data.error || 'Login failed', 'err');
+    officerSessionId = "";
+    document.getElementById('officer-login-section').style.display = "";
+    document.getElementById('officer-session-section').style.display = "none";
+  }
+}
+
+// Prompt end session with key-id
+function promptEndSession() {
+  let enteredKey = prompt("Please confirm your Officer Key-ID to end session:");
+  if(enteredKey && enteredKey.trim()) {
+    officerLogout(enteredKey.trim());
+  }
+}
+
+// Officer Logout / End Session
+async function officerLogout(keyId) {
+  if(!officerSessionId) return location.reload();
+  setStatus('officer-login-status', 'Ending session...', '');
+  const r = await fetch(API + "/officer/end-session", {
+    method: "POST",
+    headers: { "Content-Type":"application/json", "X-Session-Id": officerSessionId },
+    body: JSON.stringify({ key_id: keyId })
+  });
+  let data = await r.json();
+  resetAllUI();
+  setStatus('officer-login-status', data.ok ? "Session Ended." : (data.error || "Error"), data.ok ? "ok" : "err");
+  officerSessionId = "";
+  document.getElementById('officer-login-section').style.display = "";
+  document.getElementById('officer-session-section').style.display = "none";
+}
+
+// Voter Verification
+async function verifyVoter() {
+  setStatus('verify-status', '', '');
+  setStatus('vote-status', '', '');
+  voterBiometricOk = false;
+  selectedPartyName = "";
+  showPartiesButtons([]);
+  let vid = document.getElementById('voter-id').value.trim();
+  if(!vid) { setStatus('verify-status', 'Enter Voter ID!', 'err'); return;}
+  setStatus('verify-status', 'Checking...','');
+  let r = await fetch(API + "/verify_registered_voter", {
+    method: "POST",
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify({voter_id: vid})
+  });
+  let data = await r.json();
+  if(data.ok) {
+    verifiedVoterId = vid;
+    setStatus('verify-status', "Voter "+data.voter.name+" verified! Proceed to biometric.", 'ok');
+  } else {
+    verifiedVoterId = "";
+    setStatus('verify-status', data.error || "Not authorized", 'err');
+  }
+}
+
+// Biometric Verification
+async function biometricVerify() {
+  setStatus('biometric-status', '', '');
+  setStatus('vote-status', '', '');
+  voterBiometricOk = false;
+  if(!verifiedVoterId) { setStatus('biometric-status', 'Voter must be verified first!', 'err'); return; }
+  setStatus('biometric-status','Biometric verifying...', '');
+  let r = await fetch(API + "/verify_biometric", {
+    method: "POST",
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify({voter_id: verifiedVoterId, type: "thumb"})
+  });
+  let data = await r.json();
+  if(data.ok) {
+    voterBiometricOk = true;
+    setStatus('biometric-status', "Biometric check passed. You may cast vote.", 'ok');
+    loadParties();
+  } else {
+    voterBiometricOk = false;
+    setStatus('biometric-status', data.error || "Biometric failed", 'err');
+  }
+}
+
+// Load Parties for Voting
+async function loadParties() {
+  // Only allow party selection after biometric passed
+  if(!voterBiometricOk) { showPartiesButtons([]); return; }
+  let r = await fetch(API+"/get_parties");
+  let data = await r.json();
+  if(data && data.parties) {
+    showPartiesButtons(data.parties);
+  }
+}
+function showPartiesButtons(parties) {
+  let box = document.getElementById('parties-buttons');
+  box.innerHTML = "";
+  if(!Array.isArray(parties) || !parties.length) return;
+  parties.forEach((p,i) => {
+    let btn = document.createElement('button');
+    btn.className = "party-btn"+(selectedPartyName === p.party_name ? " selected" : "");
+    btn.onclick = () => {
+      selectedPartyName = p.party_name;
+      Array.from(box.children).forEach((n,ix)=>n.classList.toggle('selected',ix===i));
+    };
+    btn.innerHTML = `<span class="party-symbol">${p.symbol.length <= 3 ? p.symbol : ''}</span> ${p.party_name}`;
+    box.appendChild(btn);
+  });
+}
+
+// Cast Vote
+async function castVote() {
+  setStatus('vote-status', '', '');
+  if(!verifiedVoterId) { setStatus('vote-status', "Voter not verified!", 'err'); return;}
+  if(!voterBiometricOk) { setStatus('vote-status', "Biometric check missing!", 'err'); return;}
+  if(!selectedPartyName) { setStatus('vote-status', "Select a party!", 'err'); return;}
+  setStatus('vote-status', "Voting...", '');
+  let r = await fetch(API + "/cast_vote", {
+    method: "POST",
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify({voter_id: verifiedVoterId, party_name: selectedPartyName})
+  });
+  let data = await r.json();
+  if(data.ok) {
+    setStatus('vote-status', "🎉 Vote cast! Vote ID: "+data.vote_id, 'ok');
+    // Reset for next voter
+    document.getElementById('voter-id').value = "";
+    verifiedVoterId = ""; voterBiometricOk = false; selectedPartyName = "";
+    setStatus('verify-status', '', ''); setStatus('biometric-status', '', '');
+    showPartiesButtons([]);
+  } else {
+    setStatus('vote-status', data.error || "Vote error", 'err');
+  }
+}
+
+// Helpers
+function setStatus(id, text, style) {
+  let el = document.getElementById(id);
+  el.innerText = text;
+  el.className = "status" + (style ? " "+style : "");
+}
+function resetAllUI() {
+  setStatus('officer-login-status','','');
+  setStatus('verify-status','','');
+  setStatus('biometric-status','','');
+  setStatus('vote-status','','');
+  officerSessionId = ""; verifiedVoterId = ""; voterBiometricOk = false; selectedPartyName = "";
+  document.getElementById('officer-login-section').style.display = "";
+  document.getElementById('officer-session-section').style.display = "none";
+}
+// No access to session without officer login (enforced client side)
+resetAllUI();
+</script>
+</body>
+</html>
