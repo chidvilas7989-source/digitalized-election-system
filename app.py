@@ -1,6 +1,6 @@
 import os, json, base64, uuid, hashlib, random, time
 from datetime import datetime
-from flask import Flask, request, jsonify, make_response, send_from_directory
+from flask import Flask, request, jsonify, make_response, send_from_directory,redirect
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash
 from blockchain import SimpleBlockchain
@@ -137,6 +137,8 @@ def serve_polling():
 
 @app.route("/")
 def home():
+     """Automatically redirect to polling session"""
+    return redirect("/polling")
     return jsonify({
         "system": "Classical-Cryptographic Voting API",
         "version": "4.0",
